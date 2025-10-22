@@ -5,4 +5,8 @@ gunicorn
 python-dotenv
 fastapi
 uvicorn
-
+sqlalchemy
+pydantic
+databases
+python-multipart
+gunicorn
