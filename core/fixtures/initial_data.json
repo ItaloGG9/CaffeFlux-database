@@ -1,0 +1,6 @@
+[
+  {"model": "core.jerarquiaproducto", "pk": 1, "fields": {"nombre_jerarquia": "Bebidas", "estado": true}},
+  {"model": "core.producto", "pk": 1, "fields": {"nombre_producto": "Café Americano", "precio_venta": "1500.00", "precio_costo": "600.00", "jerarquia": 1, "estado_producto": true}},
+  {"model": "core.mesa", "pk": 1, "fields": {"estado_mesa": "libre", "hora_apertura": null, "hora_cierre": null, "observaciones": ""}},
+  {"model": "core.turno", "pk": 1, "fields": {"usuario_responsable": "admin", "hora_apertura": "2025-10-01T09:00:00Z", "fondo_inicial": "10000.00", "hora_cierre": null, "usuario_cierre": ""}}
+]
