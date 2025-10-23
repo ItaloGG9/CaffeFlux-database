@@ -1,1 +1,1 @@
-web: gunicorn caffeflux.wsgi
+web: uvicorn manage:app --host 0.0.0.0 --port $PORT
