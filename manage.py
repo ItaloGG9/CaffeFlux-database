@@ -1,11 +1,13 @@
 # main.py
 from fastapi import FastAPI
+import sqlite3
+import os
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from setup_database import get_db
 from models import Producto
 
 app = FastAPI()
+DB_PATH = os.environ.get('DATABASE_PATH', '/tmp/local_database.db')
 
 # Ejemplo de ruta principal
 @app.get("/")
@@ -21,3 +23,8 @@ def read_item(item_id: int):
 def ver_productos(db: Session = Depends(get_db)):
     productos = db.query(Producto).all()
     return productos
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
