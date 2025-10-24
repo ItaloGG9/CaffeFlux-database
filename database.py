@@ -1,7 +1,6 @@
 import os
 import sqlite3
 from urllib.parse import urlparse
-# Necesitas instalar esta librería: pip install psycopg2-binary
 import psycopg2 
 
 # Obtiene la URL de PostgreSQL desde la variable de entorno de Render
@@ -12,24 +11,36 @@ SQLITE_DB_PATH = os.path.join(os.path.dirname(__file__), "local_database.db")
 
 
 def get_db_connection():
-    # El primer nivel de código dentro de la función debe estar indentado 4 espacios.
-    
     # ----------------------------------------------------
     # 1. CONEXIÓN DE PRODUCCIÓN (RENDER/POSTGRESQL)
     # ----------------------------------------------------
-    if DATABASE_URL: 
-        # Asegúrate que el bloque try/except esté indentado 8 espacios (4 + 4)
+    if DATABASE_URL:
         try:
-            # ... tu lógica de psycopg2.connect ...
-            # y el sslmode='require'
+            # Parsear la URL de Render
+            url = urlparse(DATABASE_URL)
+            
+            # Conexión a PostgreSQL (con SSL)
+            conn = psycopg2.connect(
+                database=url.path[1:],
+                user=url.username,
+                password=url.password,
+                host=url.hostname,
+                port=url.port,
+                sslmode='require'  # OBLIGATORIO para Render
+            )
+            return conn
+        
         except psycopg2.Error as e:
-            # ... manejo del error
-            pass # Asegúrate que el pass/raise esté correctamente indentado
+            # Si falla la conexión (ej. credenciales malas), se imprime el error 
+            # y se levanta una excepción.
+            print(f"ERROR: Fallo al conectar con PostgreSQL en Render. {e}")
+            # Es mejor levantar el error para que FastAPI sepa que falló.
+            raise ConnectionError(f"No se pudo conectar a la base de datos de Render: {e}")
+
     # ----------------------------------------------------
     # 2. CONEXIÓN DE DESARROLLO (LOCAL/SQLITE)
     # ----------------------------------------------------
     else:
         conn = sqlite3.connect(SQLITE_DB_PATH)
-        # Mantener la configuración que tenías para facilitar la transición
-        conn.row_factory = sqlite3.Row 
+        conn.row_factory = sqlite3.Row  
         return conn
