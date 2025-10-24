@@ -1,14 +1,8 @@
-Django>=4.2,<5
-dj-database-url
-djangorestframework>=3.14
-django-cors-headers
+psycopg2-binary
 gunicorn
-python-dotenv
+# Añade aquí tu framework web principal (FastAPI, Django, Flask, etc.)
 fastapi
-uvicorn
+# Otras librerías que uses directamente en tu código:
 sqlalchemy
 pydantic
-databases
 python-multipart
-gunicorn
-psycopg2-binary
