@@ -1,4 +1,5 @@
 Django>=4.2,<5
+dj-database-url
 djangorestframework>=3.14
 django-cors-headers
 gunicorn
@@ -10,3 +11,4 @@ pydantic
 databases
 python-multipart
 gunicorn
+psycopg2-binary
