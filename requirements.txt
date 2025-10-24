@@ -4,6 +4,6 @@ gunicorn
 fastapi
 # Otras librerías que uses directamente en tu código:
 sqlalchemy
-unicon
+uvicorn
 pydantic
 python-multipart
