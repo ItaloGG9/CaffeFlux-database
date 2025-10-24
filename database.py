@@ -15,27 +15,20 @@ def get_db_connection():
     # ----------------------------------------------------
     # 1. CONEXIÓN DE PRODUCCIÓN (RENDER/POSTGRESQL)
     # ----------------------------------------------------
-    if DATABASE_URL:
-        try:
-            url = urlparse(DATABASE_URL)
-            
-            conn = psycopg2.connect(
-                database=url.path[1:],
-                user=url.username,
-                password=url.password,
-                host=url.hostname,
-                port=url.port,
-                # Forzar SSL es NECESARIO para Render
-                sslmode='require' 
-            )
-            # En PostgreSQL, usamos un cursor para obtener las filas, 
-            # no sqlite3.Row. Tu código de consulta deberá adaptarse.
-            return conn
-        
-        except psycopg2.Error as e:
-            print(f"ERROR: Fallo al conectar con PostgreSQL en Render. {e}")
-            raise ConnectionError("No se pudo conectar a la base de datos de Render.")
-
+   # Modificación en database.py (parte de PRODUCCIÓN)
+# ...
+if os.environ.get('DB_HOST'): # Verificar si las variables separadas existen
+    try:
+        conn = psycopg2.connect(
+            database=os.environ.get('DB_NAME'),
+            user=os.environ.get('DB_USER'),
+            password=os.environ.get('DB_PASS'),
+            host=os.environ.get('DB_HOST'),
+            port='5432', # Puerto por defecto
+            sslmode='require' # Aún necesaria para la conexión externa
+        )
+        return conn
+# ...
     # ----------------------------------------------------
     # 2. CONEXIÓN DE DESARROLLO (LOCAL/SQLITE)
     # ----------------------------------------------------
