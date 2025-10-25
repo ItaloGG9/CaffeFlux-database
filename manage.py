@@ -1,20 +1,19 @@
 from fastapi import FastAPI
-import os
-import sqlite3
-from database import get_db_connection  # ✅ importamos nuestra función nueva
+from database import get_db_connection
 
 app = FastAPI()
 
-DB_PATH = os.environ.get('DATABASE_PATH', '/tmp/local_database.db')
-
-@app.get("/")
-def read_root():
-    return {"message": "Hello, FastAPI en Render!"}
-
-# Ejemplo simple: listar productos desde SQLite
 @app.get("/productos")
 def ver_productos():
     conn = get_db_connection()
-    productos = conn.execute("SELECT * FROM productos").fetchall()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM productos")
+    columnas = [desc[0] for desc in cursor.description]
+    productos = [dict(zip(columnas, fila)) for fila in cursor.fetchall()]
     conn.close()
-    return [dict(row) for row in productos]
+    return productos
+
+@app.get("/debug-db")
+def debug_db():
+    conn = get_db_connection()
+    return {"tipo_conexion": str(type(conn))}
