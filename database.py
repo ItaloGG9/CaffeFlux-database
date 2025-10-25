@@ -7,10 +7,6 @@ import psycopg2
 # En producción, usa variables de entorno (os.environ.get).
 DATABASE_URL_DIRECTO = "postgresql://base_de_datos_postgresql_00kp_user:AvAJSH6iC1aEj34OGhjQ7dHrBCimpFbW@dpg-d3tctauuk2gs73d1da5g-a.oregon-postgres.render.com/base_de_datos_postgresql_00kp"
 
-# Ruta local para SQLite (solo se usa si no hay DATABASE_URL)
-SQLITE_DB_PATH = os.path.join(os.path.dirname(__file__), "local_database.db")
-
-
 def get_db_connection():
     # ----------------------------------------------------
     # 1. CONEXIÓN DE PRODUCCIÓN (RENDER/POSTGRESQL)
