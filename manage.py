@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import get_db_connection
 from pydantic import BaseModel
 
+class Producto(BaseModel):
+    nombre: str
+    precio: float
+    descripcion: str = None
+
 app = FastAPI(
     title="CaffeFlux API ☕",
     description="API del sistema de pedidos, productos y mesas del proyecto CaffeFlux.",
@@ -40,11 +45,6 @@ def ver_productos():
     cur.close()
     conn.close()
     return datos
-
-class Producto(BaseModel):
-    nombre: str
-    precio: float
-    descripcion: str = None
 
 @app.post("/api/productos")
 def agregar_producto(producto: Producto):
