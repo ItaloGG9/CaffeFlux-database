@@ -1,20 +1,23 @@
 from fastapi import FastAPI
-from database import get_db_connection
 from fastapi.middleware.cors import CORSMiddleware
+from database import get_db_connection
 
 app = FastAPI(
     title="CaffeFlux API ☕",
     description="API del sistema de pedidos, productos y mesas del proyecto CaffeFlux.",
     version="1.0.0"
 )
+
+# =====================================================
+# 🌐 CORS (para permitir conexión con el frontend React)
+# =====================================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Puedes limitarlo a ["http://localhost:3000"] y tu dominio del frontend
+    allow_origins=["*"],  # Puedes poner ["http://localhost:3000", "https://tu-frontend-en-render.com"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # =====================================================
 # 🏠 Raíz
@@ -23,11 +26,10 @@ app.add_middleware(
 def root():
     return {"message": "Bienvenido a la API de CaffeFlux conectada a PostgreSQL ✅"}
 
-
 # =====================================================
 # 📦 PRODUCTOS
 # =====================================================
-@app.get("/productos")
+@app.get("/api/productos")
 def ver_productos():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -38,11 +40,10 @@ def ver_productos():
     conn.close()
     return datos
 
-
 # =====================================================
 # 🍽️ MESAS
 # =====================================================
-@app.get("/mesas")
+@app.get("/api/mesas")
 def ver_mesas():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -53,11 +54,10 @@ def ver_mesas():
     conn.close()
     return datos
 
-
 # =====================================================
 # 🧾 PEDIDOS
 # =====================================================
-@app.get("/pedidos")
+@app.get("/api/pedidos")
 def ver_pedidos():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -68,11 +68,10 @@ def ver_pedidos():
     conn.close()
     return datos
 
-
 # =====================================================
 # 📋 LÍNEAS DE PEDIDO
 # =====================================================
-@app.get("/lineas_pedido")
+@app.get("/api/lineas_pedido")
 def ver_lineas_pedido():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -83,11 +82,10 @@ def ver_lineas_pedido():
     conn.close()
     return datos
 
-
 # =====================================================
 # 💰 PAGOS
 # =====================================================
-@app.get("/pagos")
+@app.get("/api/pagos")
 def ver_pagos():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -98,11 +96,10 @@ def ver_pagos():
     conn.close()
     return datos
 
-
 # =====================================================
 # 👨‍🍳 TURNOS
 # =====================================================
-@app.get("/turnos")
+@app.get("/api/turnos")
 def ver_turnos():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -113,11 +110,10 @@ def ver_turnos():
     conn.close()
     return datos
 
-
 # =====================================================
 # 🧭 JERARQUÍA DE PRODUCTOS
 # =====================================================
-@app.get("/jerarquia")
+@app.get("/api/jerarquia")
 def ver_jerarquia():
     conn = get_db_connection()
     cur = conn.cursor()
