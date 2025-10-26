@@ -4,9 +4,14 @@ from database import get_db_connection
 from pydantic import BaseModel
 
 class Producto(BaseModel):
-    nombre: str
-    precio: float
-    descripcion: str = None
+    nombre_producto: str
+    precio_venta: float
+    precio_costo: float
+    jerarquia: str
+    estado_producto: bool
+    id_jerarquia: int
+
+
 
 app = FastAPI(
     title="CaffeFlux API ☕",
@@ -52,18 +57,30 @@ def agregar_producto(producto: Producto):
     cur = conn.cursor()
     try:
         cur.execute(
-            "INSERT INTO productos (id,nombre, precio, descripcion) VALUES (%i,%s, %i, %s) RETURNING id;",
-            (producto.id,producto.nombre, producto.precio, producto.descripcion)
+            """
+            INSERT INTO productos 
+            (nombre_producto, precio_venta, precio_costo, jerarquia, estado_producto, id_jerarquia)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING id_producto;
+            """,
+            (
+                producto.nombre_producto,
+                producto.precio_venta,
+                producto.precio_costo,
+                producto.jerarquia,
+                producto.estado_producto,
+                producto.id_jerarquia
+            )
         )
         nuevo_id = cur.fetchone()[0]
         conn.commit()
+        return {"id_producto": nuevo_id, **producto.dict()}
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Error al insertar producto: {e}")
     finally:
         cur.close()
         conn.close()
-    return {"id": nuevo_id, **producto.dict()}
 
 
 @app.put("/api/productos/{producto_id}")
