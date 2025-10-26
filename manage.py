@@ -1,10 +1,18 @@
 from fastapi import FastAPI
 from database import get_db_connection
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="CaffeFlux API ☕",
     description="API del sistema de pedidos, productos y mesas del proyecto CaffeFlux.",
     version="1.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Puedes limitarlo a ["http://localhost:3000"] y tu dominio del frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
