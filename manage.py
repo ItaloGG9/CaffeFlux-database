@@ -52,8 +52,8 @@ def agregar_producto(producto: Producto):
     cur = conn.cursor()
     try:
         cur.execute(
-            "INSERT INTO productos (nombre, precio, descripcion) VALUES (%s, %s, %s) RETURNING id;",
-            (producto.nombre, producto.precio, producto.descripcion)
+            "INSERT INTO productos (id,nombre, precio, descripcion) VALUES (%i,%s, %i, %s) RETURNING id;",
+            (producto.id,producto.nombre, producto.precio, producto.descripcion)
         )
         nuevo_id = cur.fetchone()[0]
         conn.commit()
