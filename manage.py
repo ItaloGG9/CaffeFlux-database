@@ -40,6 +40,66 @@ def ver_productos():
     conn.close()
     return datos
 
+class Producto(BaseModel):
+    nombre: str
+    precio: float
+    descripcion: str = None
+
+@app.post("/api/productos")
+def agregar_producto(producto: Producto):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            "INSERT INTO productos (nombre, precio, descripcion) VALUES (%s, %s, %s) RETURNING id;",
+            (producto.nombre, producto.precio, producto.descripcion)
+        )
+        nuevo_id = cur.fetchone()[0]
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
+    return {"id": nuevo_id, **producto.dict()}
+
+
+@app.put("/api/productos/{producto_id}")
+def editar_producto(producto_id: int, producto: Producto):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM productos WHERE id = %s;", (producto_id,))
+    if not cur.fetchone():
+        cur.close()
+        conn.close()
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    cur.execute(
+        "UPDATE productos SET nombre=%s, precio=%s, descripcion=%s WHERE id=%s;",
+        (producto.nombre, producto.precio, producto.descripcion, producto_id)
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"id": producto_id, **producto.dict()}
+
+@app.delete("/api/productos/{producto_id}")
+def eliminar_producto(producto_id: int):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM productos WHERE id = %s;", (producto_id,))
+    if not cur.fetchone():
+        cur.close()
+        conn.close()
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    cur.execute("DELETE FROM productos WHERE id=%s;", (producto_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"mensaje": "Producto eliminado", "id": producto_id}
+
 # =====================================================
 # 🍽️ MESAS
 # =====================================================
