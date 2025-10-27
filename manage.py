@@ -24,7 +24,7 @@ app = FastAPI(
 # =====================================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Puedes poner ["http://localhost:3000", "https://tu-frontend-en-render.com"]
+    allow_origins=["https://caffeflux-database.onrender.com"],  # Puedes poner ["http://localhost:3000", "https://tu-frontend-en-render.com"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
