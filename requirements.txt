@@ -1,0 +1,11 @@
+psycopg2-binary
+gunicorn
+# Añade aquí tu framework web principal (FastAPI, Django, Flask, etc.)
+fastapi
+# Otras librerías que uses directamente en tu código:
+sqlalchemy
+uvicorn
+pydantic
+python-multipart
+python-dotenv
+pymongo==4.10.1
