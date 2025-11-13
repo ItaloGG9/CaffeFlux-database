@@ -2,14 +2,12 @@ import sys
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-# 🔹 fuerza la carga de la conexión a Mongo al iniciar
-from core import mongo  # noqa: F401
+from core import mongo  # Mantiene la conexión a MongoDB
 
 # Agregar el directorio actual al sys.path para las importaciones
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Importar routers
+# Importar los routers
 from routers.productos import router as productos_router
 from routers.mesas import router as mesas_router
 from routers.pedidos import router as pedidos_router
@@ -22,30 +20,27 @@ from routers.nosql import router as nosql
 app = FastAPI(
     title="CaffeFlux API ☕",
     description="API del sistema de pedidos, productos y mesas del proyecto CaffeFlux.",
-    version="1.0.0",
+    version="1.0.0"
 )
 
-# 🌐 CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://caffeflux-frontend.onrender.com",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# 🧩 Routers
+# Routers
 app.include_router(productos_router)
 app.include_router(mesas_router)
 app.include_router(pedidos_router)
 app.include_router(lineas_pedido_router)
-app.include_router(pagos_router)
+app.include_router(pagos_router)       # 👈 Asegúrate de que esté antes/después indistinto, pero incluido
 app.include_router(turnos_router)
 app.include_router(jerarquia_router)
 app.include_router(nosql)
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://caffeflux-frontend.onrender.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
@@ -55,14 +50,11 @@ def root():
 def health():
     return {"status": "ok"}
 
-# Imprime rutas al iniciar (útil para verificar /api/pagos)
+# Debug: imprime rutas al iniciar (útil para comprobar POST /api/pagos)
 @app.on_event("startup")
 async def show_routes():
     for r in app.routes:
-        try:
-            print("ROUTE:", r.path, list(getattr(r, "methods", [])))
-        except Exception:
-            pass
+        print("ROUTE:", r.path, getattr(r, "methods", None))
 
 if __name__ == "__main__":
     import uvicorn
