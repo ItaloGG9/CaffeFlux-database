@@ -3,6 +3,8 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core import mongo  # Mantiene la conexión a MongoDB
+import pymongo
+from pymongo import MongoClient
 
 # Agregar el directorio actual al sys.path para las importaciones
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
