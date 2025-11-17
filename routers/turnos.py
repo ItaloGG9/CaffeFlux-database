@@ -157,3 +157,61 @@ def eliminar_turno(id_turno: int):
     finally: # <-- Correcto
         cur.close()
         conn.close()
+    # En routers/turnos.py, después de la función 'eliminar_turno'
+
+# ===============================
+# 🔹 Borrar todos los turnos CERRADOS
+# Corresponde a DELETE /api/turnos/cerrados
+# ===============================
+@router.delete("/cerrados")
+def borrar_turnos_cerrados():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Borra todos los turnos que tienen hora_cierre (es decir, están cerrados)
+        cur.execute(
+            "DELETE FROM turnos WHERE hora_cierre IS NOT NULL RETURNING id_turno;"
+        )
+        count = cur.rowcount
+        conn.commit()
+        return {
+            "ok": True, 
+            "count": count, 
+            "message": f"{count} turno(s) cerrado(s) eliminado(s) correctamente."
+        }
+    except Exception as e:
+        conn.rollback()
+        print("❌ Error al borrar turnos cerrados:", e)
+        raise HTTPException(status_code=500, detail=f"Error al borrar turnos cerrados: {e}")
+    finally:
+        cur.close()
+        conn.close()
+
+
+# ===============================
+# 🔹 Borrar todos los turnos ACTIVOS
+# Corresponde a DELETE /api/turnos/activos
+# ===============================
+@router.delete("/activos")
+def borrar_turnos_activos():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Borra todos los turnos donde hora_cierre es NULL (es decir, están activos)
+        cur.execute(
+            "DELETE FROM turnos WHERE hora_cierre IS NULL RETURNING id_turno;"
+        )
+        count = cur.rowcount
+        conn.commit()
+        return {
+            "ok": True, 
+            "count": count, 
+            "message": f"{count} turno(s) activo(s) eliminado(s) correctamente."
+        }
+    except Exception as e:
+        conn.rollback()
+        print("❌ Error al borrar turnos activos:", e)
+        raise HTTPException(status_code=500, detail=f"Error al borrar turnos activos: {e}")
+    finally:
+        cur.close()
+        conn.close()
