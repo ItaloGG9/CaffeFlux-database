@@ -122,6 +122,37 @@ def cerrar_turno(data: dict):
         conn.rollback()
         print("❌ Error al cerrar turno:", e)
         raise HTTPException(status_code=500, detail=f"Error al cerrar turno: {e}")
+
+    # ===============================
+# 🔹 Eliminar turno por ID
+# ===============================
+@router.delete("/{id_turno}")
+def eliminar_turno(id_turno: int):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Ejecuta la eliminación y guarda el resultado del conteo de filas afectadas
+        cur.execute(
+            "DELETE FROM turnos WHERE id_turno = %s RETURNING id_turno;",
+            (id_turno,)
+        )
+        eliminado = cur.fetchone()
+        conn.commit()
+
+        if not eliminado:
+            raise HTTPException(status_code=404, detail=f"Turno con ID {id_turno} no encontrado.")
+
+        return {"ok": True, "message": f"Turno {id_turno} eliminado correctamente."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        print("❌ Error al eliminar turno:", e)
+        raise HTTPException(status_code=500, detail=f"Error al eliminar turno: {e}")
+    finally:
+        cur.close()
+        conn.close()
     finally:
         cur.close()
         conn.close()
