@@ -82,7 +82,7 @@ def abrir_turno(turno: Turno):
         conn.rollback()
         print("❌ Error al abrir turno:", e)
         raise HTTPException(status_code=500, detail=f"Error al abrir turno: {e}")
-    finally:
+    finally: # <-- Correcto
         cur.close()
         conn.close()
 
@@ -122,8 +122,12 @@ def cerrar_turno(data: dict):
         conn.rollback()
         print("❌ Error al cerrar turno:", e)
         raise HTTPException(status_code=500, detail=f"Error al cerrar turno: {e}")
+    finally: # <-- Agregado el bloque 'finally' de cerrar_turno
+        cur.close()
+        conn.close()
 
-    # ===============================
+
+# ===============================
 # 🔹 Eliminar turno por ID
 # ===============================
 @router.delete("/{id_turno}")
@@ -150,9 +154,6 @@ def eliminar_turno(id_turno: int):
         conn.rollback()
         print("❌ Error al eliminar turno:", e)
         raise HTTPException(status_code=500, detail=f"Error al eliminar turno: {e}")
-    finally:
-        cur.close()
-        conn.close()
-    finally:
+    finally: # <-- Correcto
         cur.close()
         conn.close()
