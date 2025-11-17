@@ -79,4 +79,4 @@ def borrar_todos_los_pagos():
         }
     except Exception as e:
         print("❌ Error al borrar todos los pagos:", e)
-        raise HTTPException(status_code=500, detail=f"Error al vaciar la colección de pagos: {e}")s
+        raise HTTPException(status_code=500, detail=f"Error al vaciar la colección de pagos: {e}")
