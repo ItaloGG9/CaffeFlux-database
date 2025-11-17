@@ -63,8 +63,8 @@ def listar_pagos():
 # Corresponde a DELETE /api/pagos
 # ===============================
 @router.delete("/")
-@router.delate("")
-# 🟢 CORRECCIÓN 2: Eliminado Depends y el argumento de dependencia innecesario
+@router.delete("") # 🟢 CORRECCIÓN FINAL: 'delate' cambiado a 'delete'
+# 🟢 Eliminado Depends y el argumento de dependencia innecesario
 def borrar_todos_los_pagos(): 
     try:
         # Usamos la variable global de colección
