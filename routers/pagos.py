@@ -49,3 +49,29 @@ async def crear_pago(payload: Dict[str, Any]):
 def listar_pagos():
     docs = list(pagos_collection.find({}, {"_id": 0}))
     return docs
+
+# ... (otras funciones como GET, POST) ...
+
+# ===============================
+# 🔹 Borrar TODOS los pagos/ventas
+# Corresponde a DELETE /api/pagos
+# ===============================
+@router.delete("/")
+def borrar_todos_los_pagos(db = Depends(get_mongodb_connection)):
+    try:
+        # Aquí 'pagos' es el nombre de tu colección
+        resultado = db.pagos.delete_many({}) 
+        
+        if resultado.deleted_count == 0:
+            # Aunque no haya pagos, se considera éxito en la limpieza
+            return {"ok": True, "message": "No había pagos/ventas que eliminar. Limpieza exitosa.", "count": 0}
+
+        return {
+            "ok": True, 
+            "message": f"{resultado.deleted_count} pagos/ventas eliminados correctamente.",
+            "count": resultado.deleted_count
+        }
+    except Exception as e:
+        print("❌ Error al borrar todos los pagos:", e)
+        # 500 para error de servidor/DB
+        raise HTTPException(status_code=500, detail=f"Error al vaciar la colección de pagos: {e}")
