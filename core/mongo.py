@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGO_URL = os.getenv("MONGO_URL")  # sin default, así te obliga a configurarla bien
+MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://caffeflux:igg1812@caffeflux.f393nnt.mongodb.net/?retryWrites=true&w=majority&appName=Caffeflux")  # sin default, así te obliga a configurarla bien
 
 if not MONGO_URL:
     raise RuntimeError("❌ Falta la variable de entorno MONGO_URL")
