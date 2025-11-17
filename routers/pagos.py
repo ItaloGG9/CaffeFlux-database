@@ -10,24 +10,39 @@ pagos_collection = db["pagos"]
 @router.post("")
 @router.post("/")
 async def crear_pago(payload: Dict[str, Any]):
-    """
-    Guarda la venta tal cual llega desde el front en MongoDB.
-    Evita Pydantic para no chocar con versiones y validadores.
-    """
     try:
-        # Normaliza algunos campos opcionales
         payload = dict(payload)
+
+        # Default solo si no viene nada
+        metodo = payload.get("metodo_pago", "Efectivo")
+
+        METODOS_VALIDOS = {"Efectivo", "Debito", "Transferencia"}
+        if metodo not in METODOS_VALIDOS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Metodo de pago inválido: {metodo}. Debe ser uno de: {', '.join(METODOS_VALIDOS)}"
+            )
+
+        payload["metodo_pago"] = metodo  # ya validado
+
         payload.setdefault("fecha_hora", datetime.utcnow().isoformat())
-        payload.setdefault("metodo_pago", "Efectivo")
         payload.setdefault("total", 0)
         payload.setdefault("productos", [])
 
         res = pagos_collection.insert_one(payload)
-        return {"ok": True, "message": "Pago guardado en Mongo", "id": str(res.inserted_id)}
+        return {
+            "ok": True,
+            "message": "Pago guardado en Mongo",
+            "id": str(res.inserted_id),
+        }
+
+    except HTTPException:
+        # re-lanzamos las de validación
+        raise
     except Exception as e:
-        # imprime en logs de Render
         print("Error en crear_pago:", e)
         raise HTTPException(status_code=500, detail=f"Error al guardar el pago: {e}")
+
 
 @router.get("")
 @router.get("/")
