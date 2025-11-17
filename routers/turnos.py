@@ -16,14 +16,17 @@ class Turno(BaseModel):
 
 
 # ===============================
-# 🔹 Obtener todos los turnos
+# 🔹 Obtener todos los turnos (MODIFICADO: Ordenado por más reciente)
 # ===============================
 @router.get("/")
 def ver_turnos():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM turnos ORDER BY id_turno ASC;")
+        
+        # 🟢 CAMBIO APLICADO AQUÍ: Ordenar por 'hora_apertura' o 'id_turno' de forma descendente (DESC)
+        cur.execute("SELECT * FROM turnos ORDER BY hora_apertura DESC;")
+        
         columnas = [desc[0] for desc in cur.description]
         datos = [dict(zip(columnas, fila)) for fila in cur.fetchall()]
         cur.close()
@@ -82,7 +85,7 @@ def abrir_turno(turno: Turno):
         conn.rollback()
         print("❌ Error al abrir turno:", e)
         raise HTTPException(status_code=500, detail=f"Error al abrir turno: {e}")
-    finally: # <-- Correcto
+    finally:
         cur.close()
         conn.close()
 
@@ -122,7 +125,7 @@ def cerrar_turno(data: dict):
         conn.rollback()
         print("❌ Error al cerrar turno:", e)
         raise HTTPException(status_code=500, detail=f"Error al cerrar turno: {e}")
-    finally: # <-- Agregado el bloque 'finally' de cerrar_turno
+    finally:
         cur.close()
         conn.close()
 
@@ -135,7 +138,6 @@ def eliminar_turno(id_turno: int):
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-        # Ejecuta la eliminación y guarda el resultado del conteo de filas afectadas
         cur.execute(
             "DELETE FROM turnos WHERE id_turno = %s RETURNING id_turno;",
             (id_turno,)
@@ -154,11 +156,10 @@ def eliminar_turno(id_turno: int):
         conn.rollback()
         print("❌ Error al eliminar turno:", e)
         raise HTTPException(status_code=500, detail=f"Error al eliminar turno: {e}")
-    finally: # <-- Correcto
+    finally:
         cur.close()
         conn.close()
-    # En routers/turnos.py, después de la función 'eliminar_turno'
-
+    
 # ===============================
 # 🔹 Borrar todos los turnos CERRADOS
 # Corresponde a DELETE /api/turnos/cerrados
