@@ -17,7 +17,7 @@ from routers.lineas_pedido import router as lineas_pedido_router
 from routers.pagos import router as pagos_router
 from routers.turnos import router as turnos_router
 from routers.jerarquia import router as jerarquia_router
-from routers.nosql import router as nosql
+
 
 app = FastAPI(
     title="CaffeFlux API ☕",
@@ -30,10 +30,10 @@ app.include_router(productos_router)
 app.include_router(mesas_router)
 app.include_router(pedidos_router)
 app.include_router(lineas_pedido_router)
-app.include_router(pagos_router)       # 👈 Asegúrate de que esté antes/después indistinto, pero incluido
+app.include_router(pagos_router)     
 app.include_router(turnos_router)
 app.include_router(jerarquia_router)
-app.include_router(nosql)
+
 
 # CORS
 app.add_middleware(
