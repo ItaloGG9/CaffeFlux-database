@@ -5,7 +5,7 @@ load_dotenv()
 
 
 # Obtiene la URL desde las variables de entorno
-MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://italogrossi9_db_user:italogrossi9_db_user@caffeflux.yqiwvy6.mongodb.net/?appName=Caffeflux")
+MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://italogrossi9_db_user:igg1812%40@caffeflux.yqiwvy6.mongodb.net/?appName=Caffeflux")
 
 # Crea la conexión con MongoDB Atlas
 try:
