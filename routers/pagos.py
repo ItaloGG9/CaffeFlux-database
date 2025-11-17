@@ -1,10 +1,15 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends # 🟢 CORRECCIÓN 1: AGREGADO Depends
 from datetime import datetime
 from typing import Any, Dict
 from core.mongo import db  # usa tu conexión ya inicializada
 
+# ⚠️ NOTA: Necesitas también importar get_mongodb_connection si lo usas en otros archivos,
+# pero para este endpoint de DELETE, usaremos la colección global.
+# from core.database import get_mongodb_connection 
+
 router = APIRouter(prefix="/api/pagos", tags=["Pagos"])
-pagos_collection = db["pagos"]
+pagos_collection = db["pagos"] # Colección global que usaremos
+
 
 # Acepta con y sin slash
 @router.post("")
@@ -47,23 +52,24 @@ async def crear_pago(payload: Dict[str, Any]):
 @router.get("")
 @router.get("/")
 def listar_pagos():
-    docs = list(pagos_collection.find({}, {"_id": 0}))
+    # Incluimos _id si el Frontend lo necesita, sino lo quitamos como antes
+    docs = list(pagos_collection.find({}, {"_id": 0})) 
     return docs
 
 # ... (otras funciones como GET, POST) ...
 
 # ===============================
-# 🔹 Borrar TODOS los pagos/ventas
+# 🔹 Borrar TODOS los pagos/ventas (CORREGIDO: Usa la colección global 'pagos_collection')
 # Corresponde a DELETE /api/pagos
 # ===============================
 @router.delete("/")
-def borrar_todos_los_pagos(db = Depends(get_mongodb_connection)):
+# 🟢 CORRECCIÓN 2: Eliminado Depends y el argumento de dependencia innecesario
+def borrar_todos_los_pagos(): 
     try:
-        # Aquí 'pagos' es el nombre de tu colección
-        resultado = db.pagos.delete_many({}) 
+        # Usamos la variable global de colección
+        resultado = pagos_collection.delete_many({})  
         
         if resultado.deleted_count == 0:
-            # Aunque no haya pagos, se considera éxito en la limpieza
             return {"ok": True, "message": "No había pagos/ventas que eliminar. Limpieza exitosa.", "count": 0}
 
         return {
@@ -73,5 +79,4 @@ def borrar_todos_los_pagos(db = Depends(get_mongodb_connection)):
         }
     except Exception as e:
         print("❌ Error al borrar todos los pagos:", e)
-        # 500 para error de servidor/DB
-        raise HTTPException(status_code=500, detail=f"Error al vaciar la colección de pagos: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al vaciar la colección de pagos: {e}")s
