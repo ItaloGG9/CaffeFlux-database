@@ -1,20 +1,19 @@
+# core/mongo.py
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
+MONGO_URL = os.getenv("MONGO_URL")  # sin default, así te obliga a configurarla bien
 
-# Obtiene la URL desde las variables de entorno
-MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://italogrossi9_db_user:igg1812%40@caffeflux.yqiwvy6.mongodb.net/?appName=Caffeflux")
+if not MONGO_URL:
+    raise RuntimeError("❌ Falta la variable de entorno MONGO_URL")
 
-# Crea la conexión con MongoDB Atlas
 try:
     client = MongoClient(MONGO_URL)
-    db = client["caffeflux"]  # nombre de tu base de datos en Atlas
+    db = client["caffeflux"]  # nombre de tu base en Atlas
     print("✅ Conectado correctamente a MongoDB Atlas")
 except Exception as e:
     print(f"❌ Error conectando con MongoDB: {e}")
-
-# Colecciones
-ventas_collection = db["ventas"]
-logs_collection = db["logs"]
+    raise
