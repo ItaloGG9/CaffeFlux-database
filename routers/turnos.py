@@ -24,7 +24,6 @@ def ver_turnos():
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # 🟢 CAMBIO APLICADO AQUÍ: Ordenar por 'hora_apertura' o 'id_turno' de forma descendente (DESC)
         cur.execute("SELECT * FROM turnos ORDER BY hora_apertura DESC;")
         
         columnas = [desc[0] for desc in cur.description]
@@ -131,37 +130,7 @@ def cerrar_turno(data: dict):
 
 
 # ===============================
-# 🔹 Eliminar turno por ID
-# ===============================
-@router.delete("/{id_turno}")
-def eliminar_turno(id_turno: int):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    try:
-        cur.execute(
-            "DELETE FROM turnos WHERE id_turno = %s RETURNING id_turno;",
-            (id_turno,)
-        )
-        eliminado = cur.fetchone()
-        conn.commit()
-
-        if not eliminado:
-            raise HTTPException(status_code=404, detail=f"Turno con ID {id_turno} no encontrado.")
-
-        return {"ok": True, "message": f"Turno {id_turno} eliminado correctamente."}
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        conn.rollback()
-        print("❌ Error al eliminar turno:", e)
-        raise HTTPException(status_code=500, detail=f"Error al eliminar turno: {e}")
-    finally:
-        cur.close()
-        conn.close()
-    
-# ===============================
-# 🔹 Borrar todos los turnos CERRADOS
+# 🔹 Borrar todos los turnos CERRADOS (REORDENADO)
 # Corresponde a DELETE /api/turnos/cerrados
 # ===============================
 @router.delete("/cerrados")
@@ -190,7 +159,7 @@ def borrar_turnos_cerrados():
 
 
 # ===============================
-# 🔹 Borrar todos los turnos ACTIVOS
+# 🔹 Borrar todos los turnos ACTIVOS (REORDENADO)
 # Corresponde a DELETE /api/turnos/activos
 # ===============================
 @router.delete("/activos")
@@ -213,6 +182,37 @@ def borrar_turnos_activos():
         conn.rollback()
         print("❌ Error al borrar turnos activos:", e)
         raise HTTPException(status_code=500, detail=f"Error al borrar turnos activos: {e}")
+    finally:
+        cur.close()
+        conn.close()
+        
+        
+# ===============================
+# 🔹 Eliminar turno por ID (MOVIDO AL FINAL)
+# ===============================
+@router.delete("/{id_turno}")
+def eliminar_turno(id_turno: int):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            "DELETE FROM turnos WHERE id_turno = %s RETURNING id_turno;",
+            (id_turno,)
+        )
+        eliminado = cur.fetchone()
+        conn.commit()
+
+        if not eliminado:
+            raise HTTPException(status_code=404, detail=f"Turno con ID {id_turno} no encontrado.")
+
+        return {"ok": True, "message": f"Turno {id_turno} eliminado correctamente."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        conn.rollback()
+        print("❌ Error al eliminar turno:", e)
+        raise HTTPException(status_code=500, detail=f"Error al eliminar turno: {e}")
     finally:
         cur.close()
         conn.close()
